@@ -1,0 +1,67 @@
+<!-- ==========================================================
+    ✟ FIXED BOTTOM NAVIGATION COMPONENT (CLICK-THROUGH) ✟
+    ========================================================== -->
+
+<footer id="footer">
+    <div class="footer-photo-wrapper">
+        <img src="{{ '/images/dao.png' | relative_url }}" alt="DAO" class="footer-photo">
+    </div>
+</footer>
+
+<style>
+    /* 1. 给页面增加底部安全距离，防止下方文字贴底 */
+    @media (max-width: 768px) {
+        body { padding-bottom: 90px !important; }
+    }
+    @media (min-width: 769px) {
+        body { padding-bottom: 120px !important; }
+    }
+
+    /* 2. 悬浮底部容器：完全透明背景 + 鼠标点击穿透 */
+    #footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 15px 0;
+        background: transparent !important; /* 彻底移除黑色边框遮挡 */
+        box-sizing: border-box;
+        z-index: 9999;
+        pointer-events: none !important; /* 🌟 核心：允许鼠标事件完全穿透状态栏，直接操作底下的网页元素 */
+    }
+
+    /* 3. 图片容器 */
+    .footer-photo-wrapper {
+        width: 700px;
+        max-width: 90vw;
+        margin: 0 auto;
+        display: block;
+        pointer-events: none; /* 图片区域同样保持穿透 */
+    }
+
+    /* 4. 保留兼容：如果以后在底部栏加入了链接 (a) 或按钮 (button)，会自动恢复点击 */
+    #footer a,
+    #footer button {
+        pointer-events: auto !important;
+    }
+
+    .footer-photo {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain;
+        margin: 0 auto;
+        user-select: none;
+        -webkit-user-drag: none;
+        filter: invert(1) !important; /* 🌟 反色处理 */
+        transition: filter 0.3s ease; /* 平滑过渡效果 */
+    }
+
+    /* 如果后续需要配合 JS 切换反色状态，也可使用 active 类 */
+    .footer-photo.active {
+        filter: invert(1) !important;
+    }
+</style>
