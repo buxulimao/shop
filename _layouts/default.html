@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title | default: "ANDSEETHINGSASIDO" }}</title>
+
+    <!-- 🌟 1. 小图标（全局统一配置） -->
+    <link rel="icon" href="{{ '/images/tougu.png' | relative_url }}?v=1" type="image/png">
+    <link rel="shortcut icon" href="{{ '/images/tougu.png' | relative_url }}?v=1" type="image/png">
+</head>
+<body>
+
+    <!-- 🌟 2. 顶部导航栏 -->
+    {% include header.html %}
+
+    <!-- 🌟 3. 子网页的主体内容会自动填入这里 -->
+    {{ content }}
+
+    <!-- 🌟 4. 底部导航栏 -->
+    {% include footer.html %}
+
+</body>
+</html>
