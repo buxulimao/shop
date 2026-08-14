@@ -1,0 +1,304 @@
+<!-- ==========================================================
+    ✟ GOTHIC LUXURY HANDHELD NAVIGATION HEADER (DARK MENU) ✟
+    ========================================================== -->
+
+<!-- 🌟 全局浏览器小图标 -->
+<link rel="icon" href="{{ '/images/tougu.png' | relative_url }}" type="image/png">
+
+<!-- 1. 结构层 (HTML) -->
+<header id="header">
+    <img class="logo-btn" 
+         src="{{ '/images/logo.png' | relative_url }}" 
+         alt="LOGO" 
+         id="headerLogoBtn"
+         onclick="window.location.href='https://andseethingsasido.github.io/'">
+
+    <div class="menu-trigger" id="menuTrigger">
+        <div class="menu-trigger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <nav id="dropdown-menu">
+        <div class="menu-links">
+            <span class="menu-item" onclick="window.location.href='https://andseethingsasido.github.io/and666/'">商店</span>
+            <span class="menu-item" onclick="openWeChatCard()">公众号</span>
+        </div>
+    </nav>
+</header>
+
+<!-- 独立弹窗组件：公众号遮罩层（已删除关闭按钮） -->
+<div class="modal-overlay" id="qrcodeModal">
+    <div class="modal-content">
+        <div class="modal-title">Contact</div>
+        <img src="{{ '/images/gozhonghao.jpg' | relative_url }}" alt="gozhonghao" class="qrcode-img" id="modalQrcodeImg">
+    </div>
+</div>
+
+<!-- 2. 样式层 (CSS) -->
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap');
+
+    /* 自动注入顶部防遮挡边距 */
+    @media (max-width: 768px) {
+        body { padding-top: 55px !important; }
+    }
+    @media (min-width: 769px) {
+        body { padding-top: 80px !important; }
+    }
+
+    #header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: transparent;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        z-index: 1000010 !important;
+        box-sizing: border-box;
+        padding: 0 40px;
+        pointer-events: none;
+    }
+
+    /* Logo 适配：未展开时在白底上显示为黑色，展开时（黑底）切回白色 */
+    .logo-btn {
+        width: auto;
+        cursor: pointer;
+        position: relative;
+        z-index: 10003;
+        transition: transform 0.3s, filter 0.3s; 
+        pointer-events: auto;
+        filter: invert(1);
+    }
+    .logo-btn:hover { transform: scale(1.02); }
+    .logo-btn.active { filter: none !important; }
+
+    .menu-trigger {
+        position: absolute;
+        right: 40px;
+        top: 0;
+        display: flex;
+        align-items: center;
+        z-index: 10002;
+        cursor: pointer;
+        pointer-events: auto;
+    }
+    
+    .menu-trigger-icon { 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between;
+    }
+
+    /* 三道杠图标：未展开时黑色，展开时变白色 */
+    .menu-trigger-icon span { 
+        display: block; 
+        width: 100%; 
+        background: #000000; 
+        transition: background 0.3s, transform 0.3s; 
+    }
+    
+    .menu-trigger.active .menu-trigger-icon span { 
+        background: #ffffff; 
+    }
+
+    /* 下拉菜单：背景设为黑色 */
+    #dropdown-menu {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        transform: translateY(-100%); 
+        background: #000000; 
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        box-sizing: border-box;
+        z-index: 10001;
+        display: flex;
+        justify-content: flex-end; 
+        pointer-events: auto;
+    }
+    #dropdown-menu.show { transform: translateY(0); }
+
+    .menu-links { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: flex-end;
+        text-align: right;
+        gap: 24px; 
+    }
+    
+    /* 展开菜单内的文字与按钮：纯白 */
+    .menu-item {
+        font-family: "Helvetica Neue", Helvetica, Arial, -apple-system, sans-serif;
+        font-size: 20px; 
+        font-weight: 700; 
+        letter-spacing: 0.15em; 
+        color: #ffffff; 
+        cursor: pointer;
+        transition: opacity 0.25s ease;
+        white-space: nowrap;
+        margin-right: -0.15em; 
+    }
+    .menu-item:hover { opacity: 0.6; }
+
+    /* 弹窗样式 */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.85); 
+        backdrop-filter: blur(4px); 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999999 !important;
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .modal-content {
+        background-color: #ffffff; 
+        border: 1px solid #000000; 
+        padding: 35px 35px 45px 35px; 
+        text-align: center;
+        max-width: 320px;
+        width: 90%;
+        position: relative;
+        transform: scale(0.96); 
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        box-sizing: border-box;
+    }
+
+    .modal-overlay.active .modal-content { transform: scale(1); }
+
+    .modal-title {
+        font-family: 'UnifrakturMaguntia', cursive;
+        font-size: 26px;
+        margin-bottom: 25px;
+        color: #000000;
+    }
+
+    .qrcode-img {
+        width: 160px; 
+        height: 160px;
+        object-fit: contain;
+        margin: 0 auto;
+        display: block;
+        filter: none !important; 
+    }
+
+    @media (max-width: 768px) {
+        #header { height: 40px; padding: 0 20px; }
+        .logo-btn { height: 20px; } 
+        .menu-trigger { height: 40px; right: 20px; }
+        .menu-trigger-icon { width: 18px; height: 10px; }
+        .menu-trigger-icon span { height: 1.5px; }
+        #dropdown-menu { padding: 70px 20px 40px; }
+    }
+    @media (min-width: 769px) {
+        #header { height: 55px; }
+        .logo-btn { height: 35px; } 
+        .menu-trigger { height: 55px; }
+        .menu-trigger-icon { width: 24px; height: 13px; } 
+        .menu-trigger-icon span { height: 2px; }
+        #dropdown-menu { padding: 90px 40px 45px; }
+    }
+</style>
+
+<!-- 3. 行为层 (JavaScript) -->
+<script>
+    const trigger = document.getElementById('menuTrigger');
+    const menu = document.getElementById('dropdown-menu');
+    const logo = document.getElementById('headerLogoBtn');
+    const modal = document.getElementById('qrcodeModal');
+
+    let isHoveringTrigger = false;
+    let isHoveringMenu = false;
+    let isHoveringLogo = false;
+    let isClickOpen = false;
+
+    function openMenu() {
+        menu.classList.add('show');
+        trigger.classList.add('active');
+        if(logo) logo.classList.add('active');
+    }
+
+    function closeMenu() {
+        menu.classList.remove('show');
+        isClickOpen = false;
+        if (modal && !modal.classList.contains('active')) {
+            trigger.classList.remove('active');
+            if(logo) logo.classList.remove('active');
+        }
+    }
+
+    function checkMenuStatus() {
+        setTimeout(() => {
+            if (!isHoveringTrigger && !isHoveringMenu && !isHoveringLogo && !isClickOpen) {
+                closeMenu();
+            }
+        }, 30);
+    }
+
+    if (window.innerWidth >= 769) {
+        trigger.addEventListener('mouseenter', () => { isHoveringTrigger = true; openMenu(); });
+        trigger.addEventListener('mouseleave', () => { isHoveringTrigger = false; checkMenuStatus(); });
+        menu.addEventListener('mouseenter', () => { isHoveringMenu = true; });
+        menu.addEventListener('mouseleave', () => { isHoveringMenu = false; checkMenuStatus(); });
+        if (logo) {
+            logo.addEventListener('mouseenter', () => { isHoveringLogo = true; if (menu.classList.contains('show')) openMenu(); });
+            logo.addEventListener('mouseleave', () => { isHoveringLogo = false; checkMenuStatus(); });
+        }
+    }
+
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (menu.classList.contains('show')) { closeMenu(); } else { isClickOpen = true; openMenu(); }
+    });
+
+    window.addEventListener('scroll', () => { if (menu.classList.contains('show')) closeMenu(); }, { passive: true });
+
+    document.addEventListener('click', (e) => {
+        if (menu.classList.contains('show') && !menu.contains(e.target) && !trigger.contains(e.target)) { closeMenu(); }
+    });
+
+    function openWeChatCard() {
+        closeMenu(); 
+        if (modal) {
+            modal.classList.add('active'); 
+            trigger.classList.add('active');
+            if(logo) logo.classList.add('active');
+        }
+    }
+
+    function handleModalClose() {
+        if (modal) {
+            modal.classList.remove('active');
+            trigger.classList.remove('active');
+            if(logo) logo.classList.remove('active');
+        }
+    }
+
+    if (modal) {
+        modal.addEventListener('click', (e) => { if (e.target === modal) handleModalClose(); });
+    }
+</script>
