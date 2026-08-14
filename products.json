@@ -1,0 +1,18 @@
+[
+  {
+    "id": "01",
+    "name": "超大宽松直通牛仔裤",
+    "price": "200 RMB",
+    "image": "tupian/ku2.jpg",
+    "hover_image": "tupian/ku3.jpg",
+    "link": "products/3-01"
+  },
+  {
+    "id": "02",
+    "name": "超大宽松直通牛仔裤",
+    "price": "200 RMB",
+    "image": "tupian/ku1.jpg",
+    "hover_image": "tupian/ku3.jpg",
+    "link": "https://xxxxx"
+  }
+]
