@@ -1,0 +1,313 @@
+---
+layout: default
+title: SHOP | andseethingsasido
+---
+
+<!-- 引入哥特字体供 Contact 弹窗使用 -->
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+
+<!-- ✟ ERD 极简商品陈列场 ✟ -->
+<div class="container product-container">
+    <div class="product-grid" id="gridBox"></div>
+</div>
+
+<!-- 公众号 / 联系弹窗 -->
+<div class="modal-overlay" id="qrcodeModal">
+    <div class="modal-content">
+        <span class="close-btn" id="closeTrigger">&times;</span>
+        <div class="modal-title">Contact</div>
+        <img src="{{ '/images/gozhonghao.jpg' | relative_url }}" alt="微信二维码" class="qrcode-img">
+        <div class="modal-desc">扫描上方二维码<br>向主理人发起主线咨询或定制采购</div>
+    </div>
+</div>
+
+<style>
+    /* 1. 防止 fixed Header 遮挡最上排商品 */
+    body {
+        padding-top: 90px;
+    }
+    @media (max-width: 768px) {
+        body {
+            padding-top: 60px;
+        }
+    }
+
+    /* 2. 商品货架布局 */
+    .container.product-container {
+        max-width: 1350px;
+        margin: 40px auto;
+        padding: 0 40px;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 60px 40px;
+        min-height: 200px;
+    }
+
+    .product-item-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        opacity: 0;
+        transform: translateY(15px);
+        animation: erdUnveil 0.8s forwards cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    @keyframes erdUnveil {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 商品图片容器 */
+    .product-image-box {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 3 / 4;
+        background-color: #f9f9f9;
+        overflow: hidden;
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .product-image-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(10%);
+        transition: transform 0.6s ease, filter 0.6s ease, opacity 0.5s ease;
+    }
+
+    /* 主图定位 */
+    .product-image-box img.primary-img {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 悬停第二张图定位与淡入 */
+    .product-image-box img.hover-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        opacity: 0;
+    }
+
+    /* Hover 动效：第二张图淡入，两张图均微放大 */
+    .product-item-link:hover img.hover-img {
+        opacity: 1;
+        transform: scale(1.02);
+        filter: grayscale(0%);
+    }
+
+    .product-item-link:hover img.primary-img {
+        transform: scale(1.02);
+        filter: grayscale(0%);
+    }
+
+    /* 🌟 商品描述容器：默认隐藏，居中对齐 */
+    .product-info-meta {
+        text-align: center; /* 描述文字居中 */
+        padding: 0 5px;
+        opacity: 0; /* 默认隐藏 */
+        transition: opacity 0.4s ease; /* 悬停平滑淡入 */
+    }
+
+    /* 🌟 只有鼠标放到商品照片/卡片上时才显示文字 */
+    .product-item-link:hover .product-info-meta {
+        opacity: 1;
+    }
+
+    .product-name {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: 500;
+        margin: 0 0 4px 0;
+        color: #000000;
+        line-height: 1.4;
+    }
+
+    .product-price {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 400;
+        color: #777777;
+        margin: 0;
+    }
+
+    /* 3. 微信二维码弹窗系统 */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(4px); 
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 100003;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .modal-content {
+        background-color: #ffffff; 
+        border: 1px solid #000000;
+        padding: 35px; 
+        text-align: center;
+        max-width: 320px;
+        width: 90%;
+        position: relative;
+        transform: scale(0.96);
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-overlay.active .modal-content {
+        transform: scale(1);
+    }
+
+    .modal-title {
+        font-family: 'UnifrakturMaguntia', cursive;
+        font-size: 26px;
+        margin-bottom: 25px;
+        color: #000000;
+    }
+
+    .qrcode-img {
+        width: 160px; 
+        height: 160px;
+        object-fit: contain;
+        margin: 0 auto 20px auto;
+        display: block;
+        filter: grayscale(100%);
+        transition: filter 0.3s;
+    }
+
+    .qrcode-img:hover { filter: grayscale(0%); }
+
+    .modal-desc {
+        font-size: 11px;
+        color: #666666;
+        letter-spacing: 1px;
+        line-height: 1.6;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 22px;
+        color: #999999;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .close-btn:hover { color: #000000; }
+
+    @media (max-width: 768px) {
+        .container.product-container { margin: 30px auto; padding: 0 15px; }
+        .product-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 30px 15px !important; }
+        .product-name { font-size: 10px; }
+        .product-price { font-size: 10px; }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 提取 Jekyll 站点基准路径，自动纠正 GitHub Pages 子路径
+        const siteBaseUrl = "{{ '' | relative_url }}".replace(/\/$/, '');
+
+        // 路径补全函数
+        function fixPath(path) {
+            if (!path) return '';
+            if (path.startsWith('http://') || path.startsWith('https://')) return path;
+            const cleanPath = path.startsWith('/') ? path : '/' + path;
+            return siteBaseUrl + cleanPath;
+        }
+
+        // 1. 读取 JSON 渲染商品
+        const jsonUrl = "{{ '/products.json' | relative_url }}";
+        const gridBox = document.getElementById('gridBox');
+
+        if (gridBox) {
+            fetch(jsonUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('无法读取 products.json，HTTP 状态: ' + response.status);
+                    }
+                    return response.json();
+                })
+                .then(products => {
+                    gridBox.innerHTML = ''; // 清空提示内容
+
+                    if (!products || products.length === 0) {
+                        gridBox.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #999; font-size: 11px;">[ 暂无商品数据 ]</p>';
+                        return;
+                    }
+
+                    products.forEach((product, index) => {
+                        const itemLink = document.createElement('a');
+                        itemLink.href = fixPath(product.link) || '#';
+                        itemLink.className = 'product-item-link';
+                        itemLink.target = '_blank';
+                        itemLink.style.animationDelay = `${index * 0.08}s`; 
+
+                        const imgSrc = fixPath(product.image);
+                        
+                        // 兼容多种 hover 键名定义 (hover_image / hoverImage / image2 / image_hover)
+                        const hoverPath = product.hover_image || product.hoverImage || product.image2 || product.image_hover;
+                        const hoverImgSrc = hoverPath ? fixPath(hoverPath) : null;
+
+                        // 构建图片结构：若存在第二张图则同时插入 hover 节点
+                        const imageHtml = hoverImgSrc
+                            ? `<img class="primary-img" src="${imgSrc}" alt="${product.name || 'Product'}">
+                               <img class="hover-img" src="${hoverImgSrc}" alt="${product.name || 'Product'}">`
+                            : `<img class="primary-img" src="${imgSrc}" alt="${product.name || 'Product'}">`;
+
+                        itemLink.innerHTML = `
+                            <div class="product-image-box">
+                                ${imageHtml}
+                            </div>
+                            <div class="product-info-meta">
+                                <h3 class="product-name">${product.name || ''}</h3>
+                                <p class="product-price">${product.price || ''}</p>
+                            </div>
+                        `;
+                        
+                        gridBox.appendChild(itemLink);
+                    });
+                })
+                .catch(error => {
+                    console.error('加载商品失败:', error);
+                    gridBox.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: #999; font-size: 11px;">[ 商品加载失败: ${error.message} ]</p>`;
+                });
+        }
+
+        // 2. 微信公众号弹窗逻辑
+        const modal = document.getElementById('qrcodeModal');
+        const closeBtn = document.getElementById('closeTrigger');
+
+        if (closeBtn && modal) {
+            closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+            modal.addEventListener('click', (e) => { 
+                if (e.target === modal) modal.classList.remove('active'); 
+            });
+        }
+    });
+</script>
