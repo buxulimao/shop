@@ -1,0 +1,625 @@
+---
+layout: default
+---
+
+<div class="pdp-wrapper" id="pdpWrapper">
+    <!-- 左栏：产品名字 + 面料与工艺介绍 -->
+    <div class="pdp-col-left">
+        <h1 class="pdp-title">{{ page.title }}</h1>
+        <div class="pdp-details-box">
+            <h3>DETAILS / 面料与工艺</h3>
+            <ul>
+            {% if page.details %}
+                {% for item in page.details %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+            {% else %}
+                <li>100% 重磅棉质丹宁面料</li>
+                <li>手工多重做旧与洗水工艺</li>
+            {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- 中栏：产品图（首图预加载 + 后续懒加载 + 左右双向滑动 + 局部放大/双击拖拽） -->
+    <div class="pdp-col-center">
+        <div class="pdp-gallery-container" id="galleryContainer">
+            <div class="pdp-gallery" id="pdpGallery">
+                {% for img in page.gallery %}
+                    <div class="pdp-slide">
+                        <img src="{{ img | relative_url }}" 
+                             alt="{{ page.title }}"
+                             loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                             fetchpriority="{% if forloop.first %}high{% else %}low{% endif %}"
+                             decoding="async">
+                    </div>
+                {% endfor %}
+            </div>
+            <!-- 🔍 PC 端框内局部放大镜 -->
+            <div class="pdp-zoom-lens" id="zoomLens"></div>
+        </div>
+    </div>
+
+    <!-- 右栏：价格/购买按钮 + 尺码表 -->
+    <div class="pdp-col-right">
+        <button class="pdp-buy-btn" id="openModalBtn">{{ page.price }}</button>
+        <div class="pdp-size-box">
+            {{ content }}
+        </div>
+    </div>
+</div>
+
+<!-- ✟ 右侧无界抽屉弹窗 ✟ -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="right-drawer" id="rightDrawer">
+    <div class="drawer-inner">
+        <!-- 1. 上方：产品名称与价格 -->
+        <div class="drawer-header">
+            <div class="drawer-product-title">{{ page.title }}</div>
+            <div class="drawer-product-price">{{ page.price }}</div>
+        </div>
+
+        <!-- 2. 中间：纯净二维码 (调用 images/grwx.webp) -->
+        <div class="qrcode-wrapper">
+            <img src="{{ '/images/grwx.webp' | relative_url }}" alt="微信二维码" class="qrcode-img" loading="lazy" decoding="async">
+        </div>
+
+        <!-- 3. 下方：扫码咨询提示 -->
+        <div class="drawer-footer">
+            <div class="drawer-subtitle">扫描二维码向主理人发起款式咨询</div>
+            <div class="drawer-tips">支持全国顺丰包邮 / 专属客服一对一尺码建议</div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* 全局基础 */
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+    }
+
+    /* 字体与基础组件 */
+    .pdp-title {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 2.5px;
+        text-transform: uppercase;
+        color: #000;
+        line-height: 1.3;
+        margin-bottom: 25px;
+    }
+
+    .pdp-buy-btn {
+        width: 100%;
+        padding: 16px;
+        background-color: #000;
+        color: #fff;
+        border: none;
+        font-size: 12px;
+        letter-spacing: 3px;
+        font-weight: 600;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: opacity 0.2s;
+        margin-bottom: 25px;
+    }
+    .pdp-buy-btn:hover { opacity: 0.8; }
+
+    .pdp-details-box, .pdp-size-box {
+        font-size: 11px;
+        line-height: 1.8;
+        letter-spacing: 1.2px;
+        color: #333;
+        width: 100%;
+    }
+
+    .pdp-details-box h3, .pdp-size-box h3 {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin: 0 0 12px 0;
+        color: #000;
+        font-weight: 600;
+    }
+
+    .pdp-details-box ul { padding-left: 15px; margin: 0; }
+    .pdp-details-box li { margin-bottom: 6px; }
+
+    .pdp-size-box table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 5px;
+    }
+
+    .pdp-size-box th, .pdp-size-box td {
+        border-bottom: 1px solid #eee;
+        padding: 8px 4px;
+        text-align: center;
+        font-size: 10px;
+    }
+    .pdp-size-box th { font-weight: 600; color: #000; text-transform: uppercase; }
+
+    /* 🖼️ 画廊容器 - 支持双向滚动 */
+    .pdp-gallery-container {
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        user-select: none;
+    }
+
+    .pdp-gallery {
+        display: flex;
+        gap: 0;
+        width: 100%;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+    }
+    .pdp-gallery::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+    .pdp-slide {
+        flex: 0 0 100%;
+        aspect-ratio: 3 / 4;
+        background-color: #f9f9f9;
+        overflow: hidden;
+        touch-action: pan-x pan-y;
+        scroll-snap-align: start;
+    }
+
+    .pdp-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
+        pointer-events: none;
+        transition: transform 0.25s ease-out;
+        will-change: transform;
+    }
+
+    /* 🔍 PC 放大镜 */
+    .pdp-zoom-lens {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.15s ease-out;
+        background-repeat: no-repeat;
+        background-size: 250%;
+        background-position: 0% 0%;
+        z-index: 10;
+    }
+    .pdp-zoom-lens.active { opacity: 1; }
+
+    /* 👉 右侧抽屉弹窗 */
+    .drawer-backdrop {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(2px);
+        z-index: 99998;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
+    .drawer-backdrop.active { opacity: 1; pointer-events: auto; }
+
+    .right-drawer {
+        position: fixed;
+        top: 0; right: 0;
+        width: 380px;
+        max-width: 85vw;
+        height: 100vh;
+        background: #fff;
+        z-index: 99999;
+        transform: translateX(100%);
+        transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        box-shadow: -10px 0 30px rgba(0,0,0,0.03);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 30px;
+        box-sizing: border-box;
+        touch-action: pan-y;
+    }
+    .right-drawer.active { transform: translateX(0); }
+
+    .drawer-inner { width: 100%; text-align: center; }
+    .drawer-header { margin-bottom: 10px; }
+
+    .drawer-product-title {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #000;
+        margin-bottom: 6px;
+    }
+
+    .drawer-product-price {
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
+        color: #666;
+    }
+
+    .qrcode-wrapper { text-align: center; margin: 32px 0; }
+    .qrcode-img {
+        width: 160px;
+        height: 160px;
+        filter: grayscale(100%);
+        border: none;
+        display: inline-block;
+    }
+
+    .drawer-subtitle {
+        font-size: 11px;
+        color: #000;
+        letter-spacing: 1.2px;
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+
+    .drawer-tips {
+        color: #999;
+        font-size: 10px;
+        letter-spacing: 1px;
+    }
+
+    .pdp-wrapper.drawer-open .pdp-gallery-container {
+        transform: scale(0.82);
+    }
+
+    /* 📱 移动端布局 (< 992px) */
+    @media (max-width: 991px) {
+        .pdp-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 20px 80px;
+            position: relative;
+            top: -22px;
+        }
+
+        .pdp-col-left, .pdp-col-center, .pdp-col-right { display: contents; }
+
+        .pdp-title { order: 1; text-align: center; margin-bottom: 20px; font-size: 13px; }
+        .pdp-gallery-container { order: 2; margin-bottom: 25px; }
+        .pdp-buy-btn { order: 3; margin-bottom: 35px; }
+        .pdp-details-box { order: 4; width: 100%; margin-bottom: 30px; }
+        .pdp-size-box { order: 5; width: 100%; }
+
+        .pdp-gallery {
+            width: 100%;
+        }
+    }
+
+    /* 💻 PC 端布局 (>= 992px) */
+    @media (min-width: 992px) {
+        .pdp-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1.1fr 1fr;
+            gap: 50px;
+            max-width: 1350px;
+            min-height: 100vh;
+            margin: 0 auto;
+            padding: 0 40px;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+            top: -95px;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .pdp-col-left, .pdp-col-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-self: flex-start;
+            padding-top: 310px;
+        }
+
+        .pdp-title { 
+            font-size: 20px; 
+            margin-top: 0;
+            line-height: 1.2;
+            margin-bottom: 25px;
+        }
+
+        .pdp-buy-btn {
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .pdp-col-center { width: 100%; }
+
+        .pdp-wrapper.drawer-open {
+            transform: translateX(-80px);
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const pdpWrapper = document.getElementById('pdpWrapper');
+        const galleryContainer = document.getElementById('galleryContainer');
+        const gallery = document.getElementById('pdpGallery');
+        const slides = gallery ? gallery.querySelectorAll('.pdp-slide') : [];
+        const zoomLens = document.getElementById('zoomLens');
+
+        // SVG 光标图标
+        const leftArrowCursor = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3.5" stroke-linecap="square"><line x1="20" y1="12" x2="4" y2="12"></line><polyline points="11 5 4 12 11 19"></polyline></svg>') 8 8, w-resize`;
+        const rightArrowCursor = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3.5" stroke-linecap="square"><line x1="4" y1="12" x2="20" y2="12"></line><polyline points="13 5 20 12 13 19"></polyline></svg>') 8 8, e-resize`;
+        const plusCursor = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3.5" stroke-linecap="square"><line x1="12" y1="4" x2="12" y2="20"></line><line x1="4" y1="12" x2="20" y2="12"></line></svg>') 8 8, zoom-in`;
+        const minusCursor = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="3.5" stroke-linecap="square"><line x1="4" y1="12" x2="20" y2="12"></line></svg>') 8 8, zoom-out`;
+
+        let currentIndex = 0;
+        let isZoomActive = false;
+
+        // 统一双向平滑滑动函数
+        const scrollToSlide = (index) => {
+            if (!gallery || slides.length === 0) return;
+            // 确保索引在合法范围内，支持左右循环
+            currentIndex = (index + slides.length) % slides.length;
+            const slideWidth = gallery.clientWidth;
+            gallery.scrollTo({
+                left: currentIndex * slideWidth,
+                behavior: 'smooth'
+            });
+        };
+
+        // 监听原生滚动，实时更新 currentIndex
+        if (gallery) {
+            gallery.addEventListener('scroll', () => {
+                if (gallery.clientWidth > 0) {
+                    currentIndex = Math.round(gallery.scrollLeft / gallery.clientWidth);
+                }
+            }, { passive: true });
+        }
+
+        // 1. PC 端双向点击/拖拽滑动 + 放大镜
+        if (galleryContainer && gallery && slides.length > 0) {
+            let isMouseDown = false;
+            let startMouseX = 0;
+            let dragMoved = false;
+
+            // 鼠标移动（处理光标显示与拖拽/放大镜逻辑）
+            galleryContainer.addEventListener('mousemove', (e) => {
+                if (window.innerWidth < 992) return;
+
+                const rect = galleryContainer.getBoundingClientRect();
+                const ratioX = (e.clientX - rect.left) / rect.width;
+                const ratioY = (e.clientY - rect.top) / rect.height;
+
+                if (isMouseDown) {
+                    const diffX = e.clientX - startMouseX;
+                    if (Math.abs(diffX) > 5) dragMoved = true;
+                    return;
+                }
+
+                if (ratioX < 0.35) {
+                    galleryContainer.style.cursor = leftArrowCursor;
+                } else if (ratioX > 0.65) {
+                    galleryContainer.style.cursor = rightArrowCursor;
+                } else {
+                    galleryContainer.style.cursor = isZoomActive ? minusCursor : plusCursor;
+                }
+
+                if (isZoomActive && zoomLens) {
+                    zoomLens.style.backgroundPosition = `${ratioX * 100}% ${ratioY * 100}%`;
+                }
+            });
+
+            // 鼠标按下：准备拖拽
+            galleryContainer.addEventListener('mousedown', (e) => {
+                if (window.innerWidth < 992) return;
+                isMouseDown = true;
+                startMouseX = e.clientX;
+                dragMoved = false;
+            });
+
+            // 鼠标抬起：完成拖拽或点击双向切换
+            galleryContainer.addEventListener('mouseup', (e) => {
+                if (window.innerWidth < 992) return;
+                isMouseDown = false;
+
+                const rect = galleryContainer.getBoundingClientRect();
+                const diffX = e.clientX - startMouseX;
+
+                // 如果发生了水平拖拽动作（向左或向右）
+                if (dragMoved && Math.abs(diffX) > 30) {
+                    isZoomActive = false;
+                    if (zoomLens) zoomLens.classList.remove('active');
+                    if (diffX < 0) {
+                        scrollToSlide(currentIndex + 1); // 向左拖 -> 划向右边下一张
+                    } else {
+                        scrollToSlide(currentIndex - 1); // 向右拖 -> 划向左边上一张
+                    }
+                    return;
+                }
+
+                // 未发生明显拖拽时，响应点击区域
+                const ratioX = (e.clientX - rect.left) / rect.width;
+
+                if (ratioX < 0.35) {
+                    // 点击左边 -> 向上/向左切图
+                    isZoomActive = false;
+                    if (zoomLens) zoomLens.classList.remove('active');
+                    scrollToSlide(currentIndex - 1);
+                } else if (ratioX > 0.65) {
+                    // 点击右边 -> 向下/向右切图
+                    isZoomActive = false;
+                    if (zoomLens) zoomLens.classList.remove('active');
+                    scrollToSlide(currentIndex + 1);
+                } else {
+                    // 点击中间 -> 触发/关闭放大镜
+                    isZoomActive = !isZoomActive;
+                    if (isZoomActive && zoomLens) {
+                        const currentImg = slides[currentIndex]?.querySelector('img');
+                        if (currentImg) {
+                            zoomLens.style.backgroundImage = `url('${currentImg.src}')`;
+                            zoomLens.style.backgroundPosition = `${ratioX * 100}% ${((e.clientY - rect.top) / rect.height) * 100}%`;
+                            zoomLens.classList.add('active');
+                            galleryContainer.style.cursor = minusCursor;
+                        }
+                    } else if (zoomLens) {
+                        zoomLens.classList.remove('active');
+                        galleryContainer.style.cursor = plusCursor;
+                    }
+                }
+            });
+
+            galleryContainer.addEventListener('mouseleave', () => {
+                isMouseDown = false;
+                isZoomActive = false;
+                if (zoomLens) zoomLens.classList.remove('active');
+            });
+        }
+
+        // 2. 📱 移动端双击放大 + 高刷拖拽 + 左右滑动
+        slides.forEach(slide => {
+            let lastTap = 0;
+            let isMobileZoomed = false;
+            let startX = 0, startY = 0;
+            let lastX = 0, lastY = 0;
+            let curX = 0, curY = 0;
+            let isDragging = false;
+            let rafId = null;
+            const scale = 2.2;
+            const img = slide.querySelector('img');
+            if (!img) return;
+
+            // GPU 帧渲染更新
+            const updateTransform = () => {
+                img.style.transform = `translate3d(${curX}px, ${curY}px, 0) scale(${scale})`;
+                rafId = null;
+            };
+
+            slide.addEventListener('touchstart', (e) => {
+                if (window.innerWidth >= 992) return;
+
+                const currentTime = Date.now();
+                const tapLength = currentTime - lastTap;
+
+                // 双击事件触发
+                if (tapLength < 300 && tapLength > 0) {
+                    if (e.cancelable) e.preventDefault();
+                    isMobileZoomed = !isMobileZoomed;
+
+                    img.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)';
+                    lastX = 0; lastY = 0; curX = 0; curY = 0;
+
+                    if (isMobileZoomed) {
+                        if (gallery) gallery.style.overflowX = 'hidden';
+                        slide.style.touchAction = 'none'; // 禁用默认滚动手势
+                        img.style.transform = `translate3d(0px, 0px, 0) scale(${scale})`;
+                    } else {
+                        if (gallery) gallery.style.overflowX = 'auto';
+                        slide.style.touchAction = '';
+                        img.style.transform = 'translate3d(0px, 0px, 0) scale(1)';
+                    }
+                    lastTap = 0;
+                    return;
+                }
+                lastTap = currentTime;
+
+                // 放大状态下的按压拖拽开始
+                if (isMobileZoomed && e.touches.length === 1) {
+                    isDragging = true;
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    img.style.transition = 'none'; // 实时跟手零延迟
+                }
+            }, { passive: false });
+
+            slide.addEventListener('touchmove', (e) => {
+                if (window.innerWidth >= 992) return;
+
+                if (isMobileZoomed && isDragging && e.touches.length === 1) {
+                    if (e.cancelable) e.preventDefault();
+
+                    const deltaX = e.touches[0].clientX - startX;
+                    const deltaY = e.touches[0].clientY - startY;
+
+                    curX = lastX + deltaX;
+                    curY = lastY + deltaY;
+
+                    // 边缘受控限制
+                    const maxX = (slide.clientWidth * (scale - 1)) / 2;
+                    const maxY = (slide.clientHeight * (scale - 1)) / 2;
+
+                    curX = Math.max(-maxX, Math.min(maxX, curX));
+                    curY = Math.max(-maxY, Math.min(maxY, curY));
+
+                    if (!rafId) {
+                        rafId = requestAnimationFrame(updateTransform);
+                    }
+                }
+            }, { passive: false });
+
+            slide.addEventListener('touchend', () => {
+                if (window.innerWidth >= 992) return;
+
+                if (isMobileZoomed && isDragging) {
+                    isDragging = false;
+                    lastX = curX;
+                    lastY = curY;
+                    if (rafId) {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                    }
+                    img.style.transition = 'transform 0.15s ease-out';
+                    img.style.transform = `translate3d(${curX}px, ${curY}px, 0) scale(${scale})`;
+                }
+            }, { passive: true });
+
+            slide.addEventListener('touchcancel', () => {
+                if (window.innerWidth >= 992) return;
+                if (isMobileZoomed && isDragging) {
+                    isDragging = false;
+                    lastX = curX;
+                    lastY = curY;
+                    if (rafId) {
+                        cancelAnimationFrame(rafId);
+                        rafId = null;
+                    }
+                }
+            });
+        });
+
+        // 3. 右侧抽屉弹窗
+        const rightDrawer = document.getElementById('rightDrawer');
+        const drawerBackdrop = document.getElementById('drawerBackdrop');
+        const openBtn = document.getElementById('openModalBtn');
+
+        const toggleDrawer = (active) => {
+            rightDrawer?.classList.toggle('active', active);
+            drawerBackdrop?.classList.toggle('active', active);
+            pdpWrapper?.classList.toggle('drawer-open', active);
+        };
+
+        if (openBtn) openBtn.addEventListener('click', () => toggleDrawer(true));
+        if (drawerBackdrop) drawerBackdrop.addEventListener('click', () => toggleDrawer(false));
+
+        // 右滑关闭手势
+        let touchStartX = 0;
+        if (rightDrawer) {
+            rightDrawer.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            rightDrawer.addEventListener('touchend', (e) => {
+                if (e.changedTouches[0].screenX - touchStartX > 50) {
+                    toggleDrawer(false);
+                }
+            }, { passive: true });
+        }
+    });
+</script>
