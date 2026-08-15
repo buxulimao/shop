@@ -1,5 +1,5 @@
 <!-- ==========================================================
-    ✟ FIXED BOTTOM NAVIGATION COMPONENT (CLICK-THROUGH) ✟
+    ✟ FIXED BOTTOM NAVIGATION COMPONENT (NO-MARGIN & AUTO-HIDE) ✟
     ========================================================== -->
 
 <footer id="footer">
@@ -9,15 +9,15 @@
 </footer>
 
 <style>
-    /* 1. 给页面增加底部安全距离，防止下方文字贴底 */
+    /* 1. 增加页面底部安全距离，防止下方内容被悬浮图遮挡 */
     @media (max-width: 768px) {
-        body { padding-bottom: 90px !important; }
+        body { padding-bottom: 60px !important; }
     }
     @media (min-width: 769px) {
-        body { padding-bottom: 120px !important; }
+        body { padding-bottom: 80px !important; }
     }
 
-    /* 2. 悬浮底部容器：完全透明背景 + 鼠标点击穿透 */
+    /* 2. 悬浮底部容器：完全贴合屏幕最底端，无任何 padding 留白 */
     #footer {
         position: fixed;
         bottom: 0;
@@ -25,43 +25,91 @@
         width: 100%;
         display: flex;
         justify-content: center;
-        align-items: center;
-        padding: 15px 0;
-        background: transparent !important; /* 彻底移除黑色边框遮挡 */
+        align-items: flex-end; /* 确保图片靠最底部对齐 */
+        padding: 0 !important; /* 清空内边距，去除留白 */
+        margin: 0 !important;
+        background: transparent !important;
         box-sizing: border-box;
         z-index: 9999;
-        pointer-events: none !important; /* 🌟 核心：允许鼠标事件完全穿透状态栏，直接操作底下的网页元素 */
+        pointer-events: none !important; /* 点击穿透，直接操作底层网页 */
+        line-height: 0; /* 消除 img 底部默认行高留白 */
     }
 
-    /* 3. 图片容器 */
+    /* 3. 图片容器尺寸控制 */
     .footer-photo-wrapper {
-        width: 700px;
-        max-width: 90vw;
         margin: 0 auto;
         display: block;
-        pointer-events: none; /* 图片区域同样保持穿透 */
+        pointer-events: none;
     }
 
-    /* 4. 保留兼容：如果以后在底部栏加入了链接 (a) 或按钮 (button)，会自动恢复点击 */
-    #footer a,
-    #footer button {
-        pointer-events: auto !important;
+    /* 移动端尺寸 */
+    @media (max-width: 768px) {
+        .footer-photo-wrapper {
+            width: 90vw;
+            max-width: 500px;
+        }
     }
 
+    /* PC 端尺寸：缩小至 1/2（原 700px 缩小至 350px） */
+    @media (min-width: 769px) {
+        .footer-photo-wrapper {
+            width: 350px;
+            max-width: 45vw;
+        }
+    }
+
+    /* 4. 图片基础样式 */
     .footer-photo {
         width: 100%;
         height: auto;
-        display: block;
+        display: block; /* 转为块级元素，彻底消除图片下方的空白高度 */
         object-fit: contain;
         margin: 0 auto;
         user-select: none;
         -webkit-user-drag: none;
-        filter: invert(1) !important; /* 🌟 反色处理 */
-        transition: filter 0.3s ease; /* 平滑过渡效果 */
+        filter: invert(1) !important; /* 反色处理 */
+        transition: filter 0.3s ease;
     }
 
-    /* 如果后续需要配合 JS 切换反色状态，也可使用 active 类 */
     .footer-photo.active {
         filter: invert(1) !important;
     }
+
+    /* 5. 交互元素恢复点击权限 */
+    #footer a,
+    #footer button {
+        pointer-events: auto !important;
+    }
 </style>
+
+<script>
+    (function() {
+        // 判断当前页面是否为“商品详细页”
+        function isProductDetailPage() {
+            const path = window.location.pathname.toLowerCase();
+            const search = window.location.search.toLowerCase();
+
+            // 常见的商品详情页 URL 特征判断：
+            // 1. URL 中包含 /product/ 或 /goods/ 或 /item/
+            // 2. 参数中包含 id=
+            // 3. 在 /shop/ 路径下且包含具体的商品子路径 (例如 /shop/product-name)
+            const isProductPath = path.includes('/product/') || 
+                                  path.includes('/goods/') || 
+                                  path.includes('/item/') || 
+                                  search.includes('id=');
+            
+            const isShopDetail = path.startsWith('/shop/') && path.split('/').filter(Boolean).length > 1;
+
+            return isProductPath || isShopDetail;
+        }
+
+        // 如果是商品详情页，彻底隐藏底部组件并恢复页面原始 padding-bottom
+        if (isProductDetailPage()) {
+            const footer = document.getElementById('footer');
+            if (footer) {
+                footer.style.display = 'none';
+            }
+            document.body.style.paddingBottom = '0px';
+        }
+    })();
+</script>
