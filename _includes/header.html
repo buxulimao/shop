@@ -43,10 +43,10 @@
 
     /* 自动注入顶部防遮挡边距 */
     @media (max-width: 768px) {
-        body { padding-top: 55px !important; }
+        body { padding-top: 65px !important; }
     }
     @media (min-width: 769px) {
-        body { padding-top: 80px !important; }
+        body { padding-top: 115px !important; }
     }
 
     #header {
@@ -207,20 +207,20 @@
     }
 
     @media (max-width: 768px) {
-        #header { height: 40px; padding: 0 20px; }
-        .logo-btn { height: 20px; } 
-        .menu-trigger { height: 40px; right: 20px; }
+        #header { height: 60px; padding: 0 20px; }
+        .logo-btn { height: 60px; } /* 移动端 Logo 放大 3 倍 (从 20px 变 60px) */
+        .menu-trigger { height: 60px; right: 20px; }
         .menu-trigger-icon { width: 18px; height: 10px; }
         .menu-trigger-icon span { height: 1.5px; }
-        #dropdown-menu { padding: 70px 20px 40px; }
+        #dropdown-menu { padding: 85px 20px 40px; } /* 增加内边距防止遮挡扩展后的 Logo */
     }
     @media (min-width: 769px) {
-        #header { height: 55px; }
-        .logo-btn { height: 35px; } 
-        .menu-trigger { height: 55px; }
+        #header { height: 105px; }
+        .logo-btn { height: 105px; } /* 桌面端 Logo 放大 3 倍 (从 35px 变 105px) */
+        .menu-trigger { height: 105px; }
         .menu-trigger-icon { width: 24px; height: 13px; } 
         .menu-trigger-icon span { height: 2px; }
-        #dropdown-menu { padding: 90px 40px 45px; }
+        #dropdown-menu { padding: 135px 40px 45px; } /* 增加内边距防止遮挡扩展后的 Logo */
     }
 </style>
 
