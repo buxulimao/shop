@@ -30,7 +30,7 @@
     "image": "tupian/银色手办.webp",
     "hover_image": "tupian/黑色手办.webp",
     "link": "products/h-05"
-  }，
+  },
   {
     "id": "05",
     "name": "3D打印卡夹",
@@ -77,6 +77,6 @@
     "price": "50 RMB",
     "image": "tupian/硬币.webp",
     "hover_image": "tupian/硬币2.webp",
-    "link": "products/h-02"
+    "link": "products/h-01"
   }
 ]
