@@ -77,5 +77,6 @@
     "price": "50 RMB",
     "image": "tupian/硬币.webp",
     "hover_image": "tupian/硬币2.webp",
- 
+    "link": "products/h-02"
+  }
 ]
