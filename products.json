@@ -6,7 +6,7 @@
     "image": "tupian/ku2.webp",
     "hover_image": "tupian/ku1.webp",
     "link": "products/3-01"
-  },
+  }
   {
     "id": "02",
     "name": "不许礼貌x浮苔壳纪念T",
@@ -14,7 +14,7 @@
     "image": "tupian/BXLMT.webp",
     "hover_image": "",
     "link": "products/3-01"
-  }，
+  }
   {
     "id": "03",
     "name": "幸运币T恤",
@@ -22,7 +22,7 @@
     "image": "tupian/T222.webp",
     "hover_image": "tupian/T恤1.webp",
     "link": "products/3-01"
-  }，
+  }
   {
     "id": "04",
     "name": "3D打印手办",
