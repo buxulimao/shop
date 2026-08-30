@@ -13,7 +13,7 @@
     "price": "129 RMB",
     "image": "tupian/BXLMT.webp",
     "hover_image": "",
-    "link": "products/3-02"
+    "link": "products/h-08"
   },
   {
     "id": "03",
@@ -21,7 +21,7 @@
     "price": "129 RMB",
     "image": "tupian/T222.webp",
     "hover_image": "tupian/T恤1.webp",
-    "link": "products/3-03"
+    "link": "products/h-09"
   },
   {
     "id": "04",
@@ -33,6 +33,65 @@
       "tupian/黑色手办.webp",
       "tupian/手办介绍1.webp"
     ],
-    "link": "products/3-04"
-  }
+    "link": "products/h-05"
+  }，
+  {
+    "id": "05",
+    "name": "3D打印卡夹",
+    "price": "165 RMB",
+    "image": "tupian/卡套.webp",
+    "hover_image": "",
+    "link": "products/h-07"
+  },
+  {
+    "id": "06",
+    "name": "3D打印磁吸相框",
+    "price": "265 RMB",
+    "image": "tupian/小相框.webp",
+    "more_images": [
+      "tupian/小相框2.webp",
+      "tupian/小画框.webp",
+      "tupian/小画框2.webp"
+    ],
+    "link": "products/h-06"
+  },
+  {
+    "id": "07",
+    "name": "3D打印戒指",
+    "price": "65 RMB",
+    "image": "tupian/戒指.webp",
+    "hover_image": "tupian/戒指3.webp",
+    "link": "products/h-03"
+  },
+  {
+    "id": "08",
+    "name": "3D打印钥匙扣",
+    "price": "78 RMB",
+    "image": "tupian/牌牌1.webp",
+    "more_images": [
+      "tupian/牌牌2.webp",
+      "tupian/牌牌3.webp"
+    ],
+    "link": "products/h-04"
+  },
+  {
+    "id": "09",
+    "name": "3D打印数据瀑布相框",
+    "price": "799 RMB",
+    "image": "tupian/相框.webp",
+    "hover_image": "tupian/画框1.webp",
+    "link": "products/h-02"
+  },
+  {
+    "id": "10",
+    "name": "3D幸运币",
+    "price": "50 RMB",
+    "image": "tupian/硬币.webp",
+    "hover_image": "tupian/硬币2.webp",
+    "more_images": [
+      "tupian/硬币2 （2）.webp",
+      "tupian/硬币1.webp"
+    ],
+    "link": "products/h-01"
+  }，
 ]
