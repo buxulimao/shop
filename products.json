@@ -9,8 +9,24 @@
   },
   {
     "id": "02",
-    "name": "超大宽松直通牛仔裤",
-    "price": "200 RMB",
+    "name": "不许礼貌x浮苔壳纪念T",
+    "price": "129 RMB",
+    "image": "tupian/ku1.webp",
+    "hover_image": "tupian/ku3.webp",
+    "link": "products/3-01"
+  }，
+  {
+    "id": "03",
+    "name": "幸运币T恤",
+    "price": "129 RMB",
+    "image": "tupian/ku1.webp",
+    "hover_image": "tupian/ku3.webp",
+    "link": "products/3-01"
+  }，
+  {
+    "id": "04",
+    "name": "3D打印手办",
+    "price": "765 RMB",
     "image": "tupian/ku1.webp",
     "hover_image": "tupian/ku3.webp",
     "link": "products/3-01"
