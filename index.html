@@ -22,14 +22,14 @@ title: 不许礼貌 | 商店
 </div>
 
 <style>
-    /* 1. 防止 fixed Header 遮挡最上排商品 & 全局背景图设置 */
+    /* 1. 全局背景固定设置：商品滚动，背景保持不动 */
     body {
         padding-top: 90px;
         background-image: url("{{ '/images/beijing.webp' | relative_url }}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
-        background-attachment: fixed;
+        background-attachment: fixed; /* 背景固定核心样式 */
     }
     @media (max-width: 768px) {
         body {
@@ -64,12 +64,12 @@ title: 不许礼貌 | 商店
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 商品图片容器 */
+    /* 商品图片容器：已移除白框/灰底背景 */
     .product-image-box {
         position: relative;
         width: 100%;
         aspect-ratio: 3 / 4;
-        background-color: #f9f9f9;
+        background-color: transparent; /* 移除白框背景 */
         overflow: hidden;
         margin-bottom: 12px;
         display: flex;
