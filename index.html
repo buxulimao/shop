@@ -22,9 +22,14 @@ title: 不许礼貌 | 商店
 </div>
 
 <style>
-    /* 1. 防止 fixed Header 遮挡最上排商品 */
+    /* 1. 防止 fixed Header 遮挡最上排商品 & 全局背景图设置 */
     body {
         padding-top: 90px;
+        background-image: url("{{ '/images/beijing.webp' | relative_url }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
     }
     @media (max-width: 768px) {
         body {
@@ -128,6 +133,7 @@ title: 不许礼貌 | 商店
         margin: 0 0 4px 0;
         color: #000000;
         line-height: 1.4;
+        text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
     }
 
     .product-price {
@@ -137,6 +143,7 @@ title: 不许礼貌 | 商店
         font-weight: 400;
         color: #777777;
         margin: 0;
+        text-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
     }
 
     /* 3. 微信二维码弹窗系统 */
